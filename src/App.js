@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import TrackingEvents from './components/TrackingEvents'
+import TrackingForm from './components/TrackingForm'
+
 
 function App() {
+
+  const [events, setEvents] = useState([]);
+  console.log(events)
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    fetch(`http://localhost:3001/?tracking=${data.tracking}`)
+      .then(response => response.json())
+      .then(data => {
+        const events = data.events || [];
+        setEvents(events);
+      })
+      .catch(console.error)
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+     
+      <TrackingForm submitHandler={submitHandler}/>
+      <TrackingEvents events={events} />
     </div>
   );
 }
